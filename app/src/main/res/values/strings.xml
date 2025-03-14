@@ -1,3 +1,14 @@
 <resources>
+    <!-- <string name=""></string> -->
     <string name="app_name">InPath</string>
+
+
+    <!-- Página de inicio -->
+    <string name="usuario">Usuario</string>
+    <string name="contraseña">Contraseña</string>
+    <string name="crear_cuenta">¿No tienes cuenta?</string>
+    <string name="crear_cuenta_hiper">Crear cuenta</string>
+    <string name="recordar_contraseña">¿No recuerdas la contraseña?</string>
+    <string name="recordar_contraseña_hiper">Recordar contraseña</string>
+
 </resources>
