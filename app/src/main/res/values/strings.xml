@@ -13,5 +13,9 @@
 
     <string name="propietario">Propietario</string>
     <string name="mascota">Mascota</string>
+    <string name="eliminar">Eliminar</string>
+    <string name="seleccionar_mascota">Seleccionar Mascota</string>
+    <string name="add_mascota">Añadir Mascota</string>
+    <string name="cancelar">Cancelar</string>
 
 </resources>
