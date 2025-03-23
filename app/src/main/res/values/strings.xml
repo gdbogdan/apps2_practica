@@ -11,4 +11,7 @@
     <string name="recordar_contraseña">¿No recuerdas la contraseña?</string>
     <string name="recordar_contraseña_hiper">Recordar contraseña</string>
 
+    <string name="propietario">Propietario</string>
+    <string name="mascota">Mascota</string>
+
 </resources>

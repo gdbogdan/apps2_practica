@@ -15,6 +15,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.inpath.screens.Inicio_sesion
+import com.example.inpath.screens.Mascota
+import com.example.inpath.screens.Propietario
+import com.example.inpath.screens.Seleccion_tipo
 import com.example.inpath.ui.theme.InPathTheme
 
 class MainActivity : ComponentActivity() {
@@ -27,11 +30,20 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = "Inicio",
+                        startDestination = "Seleccion_tipo",
                         modifier = Modifier.padding(innerPadding)
                     ){
                         composable("Inicio"){
                             Inicio_sesion(navController)
+                        }
+                        composable("Seleccion_tipo"){
+                            Seleccion_tipo(navController)
+                        }
+                        composable("Propietario"){
+                            Propietario(navController)
+                        }
+                        composable("Mascota"){
+                            Mascota(navController)
                         }
                     }
                 }
