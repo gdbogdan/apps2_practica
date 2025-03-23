@@ -1,24 +1,26 @@
 package com.example.inpath.screens
 
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 
 class MascotaViewModel: ViewModel() {
-    private val _mascotas = mutableStateListOf<String>()
-    val mascotas: List<String> = _mascotas
+    private val _mascotaSeleccionada = mutableStateOf<String?>(null)
+    val mascotaSeleccionada: String?
+        get() = _mascotaSeleccionada.value
 
     fun agregarMascota(nombre: String) {
-        if (!_mascotas.contains(nombre)) {
-            _mascotas.add(nombre)
+        if (_mascotaSeleccionada.value == null) {
+            _mascotaSeleccionada.value = nombre
         }
     }
 
-    fun eliminarMascota(nombre: String) {
-        _mascotas.remove(nombre)
+    fun eliminarMascota() {
+        _mascotaSeleccionada.value = null
     }
 
     fun obtenerMascotasDisponibles(): List<String> {
-        val nombresMascotas = listOf("Killy", "Mango","Simba", "Niga")
-        return nombresMascotas.filter { !mascotas.contains(it) }
+        val nombresMascotas = listOf("Killy", "Mango", "Simba", "Niga")
+        return nombresMascotas.filter { it != _mascotaSeleccionada.value }
     }
 }

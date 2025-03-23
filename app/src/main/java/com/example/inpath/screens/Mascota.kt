@@ -24,7 +24,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.inpath.R
 
 @Composable
-fun Mascota(navController: NavController, viewModel: MascotaViewModel = viewModel()){
+fun Mascota(navController: NavController, viewModel: MascotaViewModel = viewModel()) {
     var mostrarMenu by remember { mutableStateOf(false) }
     var mascotaSeleccionada by remember { mutableStateOf("") }
 
@@ -35,21 +35,21 @@ fun Mascota(navController: NavController, viewModel: MascotaViewModel = viewMode
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        viewModel.mascotas.forEach { mascota ->
+        if (viewModel.mascotaSeleccionada != null) {
             Row(
                 modifier = Modifier.padding(8.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text(mascota)
-                Button(onClick = { viewModel.eliminarMascota(mascota) }) {
+                Text(viewModel.mascotaSeleccionada!!)
+                Button(onClick = { viewModel.eliminarMascota() }) {
                     Text(stringResource(R.string.eliminar))
                 }
             }
-        }
-
-        Button(onClick = { mostrarMenu = true }) {
-            Text(stringResource(R.string.add_mascota))
+        } else {
+            Button(onClick = { mostrarMenu = true }) {
+                Text(stringResource(R.string.add_mascota))
+            }
         }
     }
 
@@ -58,10 +58,10 @@ fun Mascota(navController: NavController, viewModel: MascotaViewModel = viewMode
             onDismissRequest = { mostrarMenu = false },
             title = { Text(stringResource(R.string.seleccionar_mascota)) },
             text = {
-                Column (
+                Column(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
-                ){
+                ) {
                     viewModel.obtenerMascotasDisponibles().forEach { nombre ->
                         Button(onClick = {
                             mascotaSeleccionada = nombre
