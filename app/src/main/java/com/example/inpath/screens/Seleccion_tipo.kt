@@ -17,7 +17,9 @@ import androidx.navigation.NavController
 import com.example.inpath.R
 
 @Composable
-fun Seleccion_tipo(navController: NavController){
+fun Seleccion_tipo(
+    navController: NavController
+){
     Column(
         modifier = Modifier
             .fillMaxSize()

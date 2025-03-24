@@ -18,7 +18,11 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -42,10 +46,11 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
             InPathTheme {
                 val snackbar = remember{SnackbarHostState()}
+                var esPropietario by rememberSaveable { mutableStateOf(false) } //true -> propietario, false -> mascota (default)
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     topBar = {TopAppBar()},
-                    bottomBar = {BottomBar(navController)},
+                    bottomBar = {BottomBar(navController, esPropietario, cambioPropietario = {esPropietario = it})},
                     snackbarHost = { SnackbarHost(snackbar)}
                 ) { innerPadding ->
                     NavHost(
@@ -53,7 +58,7 @@ class MainActivity : ComponentActivity() {
                         startDestination = "Seleccion_tipo",
                         modifier = Modifier.padding(innerPadding)
                     ){
-                        composable("Inicio"){
+                        composable("Inicio"){ //Todavía no se usa, falta FireBase
                             Inicio_sesion(navController)
                         }
                         composable("Seleccion_tipo"){
@@ -89,7 +94,7 @@ fun TopAppBar(){
 }
 
 @Composable
-fun BottomBar(navController: NavController) {
+fun BottomBar(navController: NavController, esPropietario: Boolean, cambioPropietario: (Boolean) -> Unit) {
     NavigationBar {
         NavigationBarItem(
             icon = { Icon(painterResource(
@@ -97,8 +102,10 @@ fun BottomBar(navController: NavController) {
                 contentDescription = stringResource(string.icono_del_propietario)
             ) },
             label = { Text(stringResource(string.propietario)) },
-            selected = false,
-            onClick = { navController.navigate("Propietario") }
+            selected = esPropietario,
+            onClick = {
+                cambioPropietario(true) //Actualizo a true, quiere decir que es el propietario
+                navController.navigate("Propietario") }
         )
         NavigationBarItem(
             icon = {Icon(painterResource(
@@ -106,7 +113,7 @@ fun BottomBar(navController: NavController) {
                 contentDescription = stringResource(string.icono_de_la_huella_de_la_mascota)
             ) },
             label = { Text(stringResource(string.mascota)) },
-            selected = false,
+            selected = !esPropietario,
             onClick = { navController.navigate("Mascota") }
         )
     }
