@@ -17,5 +17,9 @@
     <string name="seleccionar_mascota">Seleccionar Mascota</string>
     <string name="add_mascota">Añadir Mascota</string>
     <string name="cancelar">Cancelar</string>
+    <string name="top_bar">InPath</string>
+    <string name="seleccion_tipo_texto1">Tiene que seleccionar Propietario o Mascota, donde cada apartado le llevará a una configuración específica para cada rol.</string>
+    <string name="seleccion_tipo_texto2">Desde este apartado, podrá dar de alta a sus mascotas, configurar el tipo de localización que desa o eliminarla.</string>
+    <string name="seleccion_tipo_texto3">En este apartado, simularemos la configuración del collar de su mascota, es por este motivo, que sólo podrá seleccionar una mascota.</string>
 
 </resources>
