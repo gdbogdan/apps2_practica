@@ -27,6 +27,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -99,13 +100,13 @@ fun TopAppBar(){
 fun BottomBar(navController: NavController) {
     NavigationBar {
         NavigationBarItem(
-            icon = { Icon(Icons.Filled.AccountCircle, contentDescription = "Propietario") },
+            icon = { Icon(painterResource(id = R.drawable.usuario), contentDescription = "Icono del propietario") },
             label = { Text("Propietario") },
             selected = false,
             onClick = { navController.navigate("Propietario") }
         )
         NavigationBarItem(
-            icon = { Icon(Icons.Filled.Info, contentDescription = "Mascota") },
+            icon = {Icon(painterResource(id = R.drawable.pata), contentDescription = "Icono de la huella de la mascota") },
             label = { Text("Mascota") },
             selected = false,
             onClick = { navController.navigate("Mascota") }
