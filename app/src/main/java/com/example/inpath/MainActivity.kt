@@ -1,7 +1,5 @@
 package com.example.inpath
 
-import android.annotation.SuppressLint
-import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -9,11 +7,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -30,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -100,14 +92,20 @@ fun TopAppBar(){
 fun BottomBar(navController: NavController) {
     NavigationBar {
         NavigationBarItem(
-            icon = { Icon(painterResource(id = R.drawable.usuario), contentDescription = "Icono del propietario") },
-            label = { Text("Propietario") },
+            icon = { Icon(painterResource(
+                id = R.drawable.usuario),
+                contentDescription = stringResource(string.icono_del_propietario)
+            ) },
+            label = { Text(stringResource(string.propietario)) },
             selected = false,
             onClick = { navController.navigate("Propietario") }
         )
         NavigationBarItem(
-            icon = {Icon(painterResource(id = R.drawable.pata), contentDescription = "Icono de la huella de la mascota") },
-            label = { Text("Mascota") },
+            icon = {Icon(painterResource(
+                id = R.drawable.pata),
+                contentDescription = stringResource(string.icono_de_la_huella_de_la_mascota)
+            ) },
+            label = { Text(stringResource(string.mascota)) },
             selected = false,
             onClick = { navController.navigate("Mascota") }
         )
