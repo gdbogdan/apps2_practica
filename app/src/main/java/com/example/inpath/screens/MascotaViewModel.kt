@@ -13,17 +13,18 @@ class MascotaViewModel : ViewModel() {
         get() = _permisosConcedidos.value
 
     fun agregarMascota(nombre: String) {
-        if (_mascotaSeleccionada.value == null) {
+        if (_mascotaSeleccionada.value == null && _permisosConcedidos.value) {
             _mascotaSeleccionada.value = nombre
         }
     }
 
     fun eliminarMascota() {
         _mascotaSeleccionada.value = null
+        _permisosConcedidos.value = false
     }
 
     fun obtenerMascotasDisponibles(): List<String> {
-        val nombresMascotas = listOf("Killy", "Mango", "Simba", "Niga")
+        val nombresMascotas = listOf("Kili", "Mango", "Simba", "Nigga")
         return nombresMascotas.filter { it != _mascotaSeleccionada.value }
     }
 
@@ -31,4 +32,8 @@ class MascotaViewModel : ViewModel() {
         _permisosConcedidos.value = estado
         return estado
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 7e6a07949c93f121ceb46d2f8aed3f91be2299a5
