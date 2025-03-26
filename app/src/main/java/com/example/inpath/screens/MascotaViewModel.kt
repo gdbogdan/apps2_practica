@@ -4,6 +4,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 
 class MascotaViewModel: ViewModel() {
+    val permisosConcedidos: Boolean
+
     private val _mascotaSeleccionada = mutableStateOf<String?>(null)
     val mascotaSeleccionada: String?
         get() = _mascotaSeleccionada.value
@@ -21,5 +23,9 @@ class MascotaViewModel: ViewModel() {
     fun obtenerMascotasDisponibles(): List<String> {
         val nombresMascotas = listOf("Killy", "Mango", "Simba", "Niga")
         return nombresMascotas.filter { it != _mascotaSeleccionada.value }
+    }
+
+    fun permisosConcedidos(b: Boolean) {
+
     }
 }

@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -35,6 +36,7 @@ import com.example.inpath.R.string
 import com.example.inpath.screens.Inicio_sesion
 import com.example.inpath.screens.Mascota
 import com.example.inpath.screens.Propietario
+import com.example.inpath.screens.PropietarioViewModel
 import com.example.inpath.screens.Seleccion_tipo
 import com.example.inpath.ui.theme.InPathTheme
 
@@ -65,7 +67,7 @@ class MainActivity : ComponentActivity() {
                             Seleccion_tipo(navController)
                         }
                         composable("Propietario"){
-                            Propietario(navController)
+                            Propietario(navController, viewModel = viewModel<PropietarioViewModel>(), snackbarHostState = snackbar)
                         }
                         composable("Mascota"){
                             Mascota(navController)

@@ -23,5 +23,9 @@
     <string name="seleccion_tipo_texto3">En este apartado, simularemos la configuración del collar de su mascota, es por este motivo, que sólo podrá seleccionar una mascota.</string>
     <string name="icono_del_propietario">Icono del propietario</string>
     <string name="icono_de_la_huella_de_la_mascota">Icono de la huella de la mascota</string>
+    <string name="nombre">Nombre:</string>
+    <string name="sexo">Sexo:</string>
+    <string name="tipo">"Tipo de animal: "</string>
+    <string name="geofence_en_desarrollo">En desarrollo. Próximamente disponible.</string>
 
 </resources>
