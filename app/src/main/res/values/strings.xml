@@ -23,5 +23,7 @@
     <string name="seleccion_tipo_texto3">En este apartado, simularemos la configuración del collar de su mascota, es por este motivo, que sólo podrá seleccionar una mascota.</string>
     <string name="icono_del_propietario">Icono del propietario</string>
     <string name="icono_de_la_huella_de_la_mascota">Icono de la huella de la mascota</string>
-
+    <string name="permisos_ubicacion_denegados">Los permisos de ubicación son necesarios para el rastreo de mascotas.</string>
+    <string name="permisos_retirar_mensaje">Para completar la eliminación, por favor desactiva los permisos de ubicación en la configuración.</string>
+    <string name="configuracion">Configuración</string>
 </resources>
