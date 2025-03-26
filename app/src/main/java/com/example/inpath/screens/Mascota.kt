@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,7 +26,7 @@ import com.example.inpath.R
 @Composable
 fun Mascota(navController: NavController, viewModel: MascotaViewModel = viewModel()) {
     var mostrarMenu by remember { mutableStateOf(false) }
-    var mascotaSeleccionada by rememberSaveable { mutableStateOf(viewModel.mascotaSeleccionada) }
+    var mascotaSeleccionada by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
