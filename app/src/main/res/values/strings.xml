@@ -23,5 +23,13 @@
     <string name="seleccion_tipo_texto3">En este apartado, simularemos la configuración del collar de su mascota, es por este motivo, que sólo podrá seleccionar una mascota.</string>
     <string name="icono_del_propietario">Icono del propietario</string>
     <string name="icono_de_la_huella_de_la_mascota">Icono de la huella de la mascota</string>
+    <string name="permisos_desactivar">Es recomendaro desactivar los permisos de ubicación.</string>
+    <string name="permisos_ubicacion_denegados">No ha concedido los permisos de ubicación.</string>
+    <string name="configuracion">Configuración.</string>
+    <string name="permisos_retirar_mensaje">Es recomendado retirar los permisos tras eliminar una mascota.</string>
+    <string name="geofence_en_desarrollo">En desarrollo. Próximamente disponible.</string>
+    <string name="nombre">Nombre:</string>
+    <string name="sexo">Sexo:</string>
+    <string name="tipo">Tipo de mascota:</string>
 
 </resources>
