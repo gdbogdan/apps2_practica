@@ -32,8 +32,4 @@ class MascotaViewModel : ViewModel() {
         _permisosConcedidos.value = estado
         return estado
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 7e6a07949c93f121ceb46d2f8aed3f91be2299a5
