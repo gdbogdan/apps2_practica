@@ -66,6 +66,8 @@ class MainActivity : ComponentActivity() {
             val context = LocalContext.current
             val snackbarHostState = remember { SnackbarHostState() }
 
+            internetViewModel.comprobarDisponibilidadRed(context) //Compruebo si hay o no internet al inicial la app
+
             // Registrar NetworkCallback
             DisposableEffect(Unit) {
                 val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -92,7 +94,7 @@ class MainActivity : ComponentActivity() {
             }
 
             val estadoRed by internetViewModel.estadoRed.observeAsState()
-            val redDisponible by internetViewModel.redDisponible.observeAsState(initial = false) // Inicializa en false
+            val redDisponible by internetViewModel.redDisponible.observeAsState(initial = true) // Asumo que hay internet
 
             LaunchedEffect(estadoRed) {
                 estadoRed?.let {
