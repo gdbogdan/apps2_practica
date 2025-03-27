@@ -122,13 +122,16 @@ class MainActivity : ComponentActivity() {
                                 Inicio_sesion(navController)
                             }
                             composable("Seleccion_tipo") {
-                                Seleccion_tipo(navController, redDisponible = redDisponible)
+                                val redDisponibleState by internetViewModel.redDisponible.observeAsState(initial = false)
+                                Seleccion_tipo(navController, redDisponible = redDisponibleState)
                             }
                             composable("Propietario") {
-                                Propietario(navController, viewModel = viewModel<PropietarioViewModel>(), snackbarHostState = snackbarHostState, redDisponible = redDisponible)
+                                val redDisponibleState by internetViewModel.redDisponible.observeAsState(initial = false)
+                                Propietario(navController, viewModel = viewModel<PropietarioViewModel>(), snackbarHostState = snackbarHostState, redDisponible = redDisponibleState)
                             }
                             composable("Mascota") {
-                                Mascota(navController, snackbarHostState = snackbarHostState, redDisponible = redDisponible)
+                                val redDisponibleState by internetViewModel.redDisponible.observeAsState(initial = false)
+                                Mascota(navController, snackbarHostState = snackbarHostState, redDisponible = redDisponibleState)
                             }
                         }
                     } else {

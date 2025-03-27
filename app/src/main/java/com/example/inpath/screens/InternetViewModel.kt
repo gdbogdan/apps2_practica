@@ -18,7 +18,7 @@ class InternetViewModel : ViewModel() {
         val network = connectivityManager.activeNetwork
         val capabilities = connectivityManager.getNetworkCapabilities(network)
 
-        val tieneInternet = capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
+        val tieneInternet = capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED) == true
         val isWifi = capabilities?.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) == true
         val isCellular = capabilities?.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) == true
 
@@ -28,10 +28,9 @@ class InternetViewModel : ViewModel() {
             context.getString(R.string.sinConexion)
         } else {
             when {
-                isWifi && isCellular -> context.getString(R.string.wifi_datos_OK)
                 isWifi -> context.getString(R.string.wi_fi_activado)
                 isCellular -> context.getString(R.string.datos_activados)
-                else -> context.getString(R.string.sinConexion) // Por si acaso
+                else -> context.getString(R.string.sinConexion) //Hay que ponerso sino da error
             }
         }
         _networkStatus.postValue(mensaje)
