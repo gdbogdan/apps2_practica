@@ -44,7 +44,8 @@ import kotlinx.coroutines.launch
 fun Propietario(
     navController: NavController,
     viewModel: PropietarioViewModel = viewModel(),
-    snackbarHostState: SnackbarHostState
+    snackbarHostState: SnackbarHostState,
+    redDisponible: Boolean
 ) {
     var mostrarDialogoAgregarMascota by remember { mutableStateOf(false) }
     var nombreMascota by remember { mutableStateOf("") }

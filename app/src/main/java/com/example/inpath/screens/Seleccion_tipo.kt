@@ -18,7 +18,8 @@ import com.example.inpath.R
 
 @Composable
 fun Seleccion_tipo(
-    navController: NavController
+    navController: NavController,
+    redDisponible: Boolean
 ){
     Column(
         modifier = Modifier

@@ -35,7 +35,12 @@ import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.Q)
 @Composable
-fun Mascota(navController: NavController, viewModel: MascotaViewModel = viewModel(), snackbarHostState: SnackbarHostState) {
+fun Mascota(
+    navController: NavController,
+    viewModel: MascotaViewModel = viewModel(),
+    snackbarHostState: SnackbarHostState,
+    redDisponible: Boolean
+){
     var mostrarMenu by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
