@@ -29,6 +29,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -60,10 +62,26 @@ fun Propietario(
         modifier = Modifier
             .fillMaxSize()
             .padding(24.dp)
-            .verticalScroll(scrollState),
+            .verticalScroll(scrollState)
+            .drawWithContent { //Es para poder ver la barra lateral de desplazamiento
+                drawContent() // Dibuja el contenido de la Column
+
+                // Dibuja el indicador de desplazamiento
+                if (scrollState.maxValue > 0) { // Verifica si hay desplazamiento posible
+                    val scrollPorcentaje = scrollState.value.toFloat() / scrollState.maxValue.toFloat()
+                    val indicadorAltura = size.height * 0.1f // Altura del indicador
+                    val indicadorY = size.height * scrollPorcentaje
+
+                    drawRect(
+                        color = Color.Gray,
+                        topLeft = Offset(size.width - 8.dp.toPx(), indicadorY),
+                        size = androidx.compose.ui.geometry.Size(8.dp.toPx(), indicadorAltura)
+                    )
+                }
+            },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(24.dp)
-    ) {
+    ){
         viewModel.listaMascotas.forEachIndexed { index, mascota ->
             Column(
                 modifier = Modifier
