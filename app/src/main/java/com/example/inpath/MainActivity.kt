@@ -129,7 +129,7 @@ class MainActivity : ComponentActivity() {
                             }
                             composable("Propietario") {
                                 val redDisponibleState by internetViewModel.redDisponible.observeAsState(initial = false)
-                                Propietario(navController, viewModel = viewModel<PropietarioViewModel>(), snackbarHostState = snackbarHostState, redDisponible = redDisponibleState)
+                                Propietario(navController, viewModel = viewModel<PropietarioViewModel>(), snackbarHostState = snackbarHostState, redDisponible = redDisponibleState, posicionViewModel = posicionMascotaViewModel)
                             }
                             composable("Mascota") {
                                 val redDisponibleState by internetViewModel.redDisponible.observeAsState(initial = false)

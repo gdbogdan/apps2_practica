@@ -27,10 +27,13 @@
         android:theme="@style/Theme.InPath"
         tools:targetApi="31">
 
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIz7SyChwZTpenbycrlS3m53IlnsQLnc5vfvjT4" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
             android:theme="@style/Theme.InPath">
 
 

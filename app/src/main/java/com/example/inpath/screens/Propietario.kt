@@ -1,5 +1,8 @@
 package com.example.inpath.screens
 
+import Posicion
+import PosicionMascotaViewModel
+import android.location.Location
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,6 +25,8 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,7 +45,29 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.inpath.R
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+
+interface LocationCallback {
+    fun onLocationResult(locationResult: LocationResult)
+}
+
+data class LocationResult(val locations: List<Location>) {
+    companion object {
+        fun create(locations: List<Location>) = LocationResult(locations)
+    }
+}
+
+data class Location(val provider: String) {
+    var latitude: Double = 0.0
+    var longitude: Double = 0.0
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -48,7 +75,8 @@ fun Propietario(
     navController: NavController,
     viewModel: PropietarioViewModel = viewModel(),
     snackbarHostState: SnackbarHostState,
-    redDisponible: Boolean
+    redDisponible: Boolean,
+    posicionViewModel: PosicionMascotaViewModel = viewModel()
 ) {
     var mostrarDialogoAgregarMascota by remember { mutableStateOf(false) }
     var nombreMascota by remember { mutableStateOf("") }
@@ -63,6 +91,34 @@ fun Propietario(
     var modoEliminar by remember { mutableStateOf(false) }
     var localizacionActivada by remember { mutableStateOf(false) }
     var areaSeguraActivada by remember { mutableStateOf(false) }
+
+    val posicionMascota by posicionViewModel.posicion.collectAsState()
+    var ubicacionActual by remember { mutableStateOf(posicionMascota) }
+    var mostrarMapa by remember { mutableStateOf(false) }
+
+    val ubicacionCallback = remember {
+        object : LocationCallback {
+            override fun onLocationResult(locationResult: LocationResult) {
+                locationResult.locations.lastOrNull()?.let { location ->
+                    ubicacionActual = Posicion(location.latitude, location.longitude)
+                }
+            }
+        }
+    }
+
+    fun requestLocationUpdates() {
+        ubicacionCallback.onLocationResult(LocationResult.create(listOf(Location("").apply {
+            latitude = posicionMascota.latitud
+            longitude = posicionMascota.longitud
+        })))
+    }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            requestLocationUpdates()
+            delay(10000)
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -152,7 +208,9 @@ fun Propietario(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        Button(onClick = { /*TODO: Mostrar en el mapa*/ }) {
+                        Button(onClick = {
+                            mostrarMapa = true
+                        }) {
                             Text(stringResource(R.string.mostrar_en_mapa))
                         }
                     }
@@ -170,6 +228,12 @@ fun Propietario(
                     R.string.eliminar_mascota
                 ))
             }
+        }
+    }
+
+    if (mostrarMapa) {
+        MostrarMapa(ubicacionActual) {
+            mostrarMapa = false
         }
     }
 
@@ -300,5 +364,25 @@ fun Propietario(
                 }
             }
         )
+    }
+}
+
+@Composable
+fun MostrarMapa(ubicacion: Posicion, onCerrar: () -> Unit) {
+    val ubicacionLatLng = LatLng(ubicacion.latitud, ubicacion.longitud)
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(ubicacionLatLng, 15f)
+    }
+
+    Column {
+        Button(onClick = { onCerrar() }) {
+            Text(stringResource(R.string.cerrar_mapa))
+        }
+        GoogleMap(
+            modifier = Modifier.fillMaxSize(),
+            cameraPositionState = cameraPositionState
+        ) {
+            Marker(state = MarkerState(position = ubicacionLatLng))
+        }
     }
 }
