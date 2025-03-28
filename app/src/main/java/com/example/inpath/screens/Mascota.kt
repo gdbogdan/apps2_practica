@@ -1,5 +1,6 @@
 package com.example.inpath.screens
 
+import PosicionMascotaViewModel
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -26,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -39,11 +41,14 @@ fun Mascota(
     navController: NavController,
     viewModel: MascotaViewModel = viewModel(),
     snackbarHostState: SnackbarHostState,
-    redDisponible: Boolean
+    redDisponible: Boolean,
+    posicionViewModel: PosicionMascotaViewModel = viewModel()
 ){
     var mostrarMenu by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+
+    val posicionMascota by posicionViewModel.posicion.collectAsState()
 
     // Lista de permisos necesarios
     val permisosUbicacion = arrayOf(
@@ -116,6 +121,18 @@ fun Mascota(
                     Text(stringResource(R.string.eliminar))
                 }
             }
+            Text(
+                text = "Posición de la mascota:",
+                fontSize = 20.sp
+            )
+            Text(
+                text = "Latitud: ${posicionMascota.latitud}",
+                fontSize = 16.sp
+            )
+            Text(
+                text = "Longitud: ${posicionMascota.longitud}",
+                fontSize = 16.sp
+            )
         } else {
             Button(onClick = {
                 if (verificarPermisos()) {

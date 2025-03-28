@@ -1,6 +1,7 @@
 package com.example.inpath
 
 import InternetViewModel
+import PosicionMascotaViewModel
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
@@ -65,6 +66,7 @@ class MainActivity : ComponentActivity() {
             val internetViewModel: InternetViewModel = viewModel()
             val context = LocalContext.current
             val snackbarHostState = remember { SnackbarHostState() }
+            val posicionMascotaViewModel: PosicionMascotaViewModel = viewModel()
 
             internetViewModel.comprobarDisponibilidadRed(context) //Compruebo si hay o no internet al inicial la app
 
@@ -131,7 +133,7 @@ class MainActivity : ComponentActivity() {
                             }
                             composable("Mascota") {
                                 val redDisponibleState by internetViewModel.redDisponible.observeAsState(initial = false)
-                                Mascota(navController, snackbarHostState = snackbarHostState, redDisponible = redDisponibleState)
+                                Mascota(navController, snackbarHostState = snackbarHostState, redDisponible = redDisponibleState, posicionViewModel = posicionMascotaViewModel)
                             }
                         }
                     } else {
