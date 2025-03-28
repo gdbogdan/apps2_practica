@@ -30,7 +30,7 @@ class InternetViewModel : ViewModel() {
             when {
                 isWifi -> context.getString(R.string.wi_fi_activado)
                 isCellular -> context.getString(R.string.datos_activados)
-                else -> context.getString(R.string.sinConexion) //Hay que ponerso sino da error
+                else -> context.getString(R.string.sinConexion) //Hay que ponerlo sino da error
             }
         }
         _networkStatus.postValue(mensaje)

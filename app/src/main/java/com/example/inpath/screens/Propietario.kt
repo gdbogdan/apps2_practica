@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -95,6 +96,8 @@ fun Propietario(
     val posicionMascota by posicionViewModel.posicion.collectAsState()
     var ubicacionActual by remember { mutableStateOf(posicionMascota) }
     var mostrarMapa by remember { mutableStateOf(false) }
+    var mostrarDialogoAreaSegura by remember { mutableStateOf(false) }
+    var areaSeguraSeleccionada by remember { mutableStateOf<AreaSegura?>(null) }
 
     val ubicacionCallback = remember {
         object : LocationCallback {
@@ -173,24 +176,13 @@ fun Propietario(
                         Spacer(modifier = Modifier.width(8.dp))
                         Button(
                             onClick = {
-                                areaSeguraActivada = !areaSeguraActivada
-                                localizacionActivada = false
-                                viewModel.actualizarLocalizacion(index, !areaSeguraActivada)
-                                scope.launch {
-                                    val resultado = snackbarHostState.showSnackbar(
-                                        message = context.getString(R.string.geofence_en_desarrollo),
-                                        actionLabel = context.getString(R.string.aceptar)
-                                    )
-                                    if (resultado == SnackbarResult.ActionPerformed) {
-                                        // Se cierra el snackbar
-                                    }
-                                }
+                                mostrarDialogoAreaSegura = true
                             },
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = if (areaSeguraActivada) Color.Green else Color.LightGray
+                                containerColor = if (areaSeguraSeleccionada != null) Color.Green else Color.LightGray
                             )
                         ) {
-                            Text(stringResource(R.string.area_segura))
+                            Text(if (areaSeguraSeleccionada != null) areaSeguraSeleccionada?.nombre ?: stringResource(R.string.area_segura) else stringResource(R.string.area_segura))
                         }
                     }
                     if (modoEliminar) {
@@ -236,6 +228,51 @@ fun Propietario(
             mostrarMapa = false
         }
     }
+
+    if (mostrarDialogoAreaSegura) {
+        SeleccionarAreaSeguraDialog(
+            onDismiss = { mostrarDialogoAreaSegura = false },
+            onAreaSeleccionada = { area ->
+                areaSeguraSeleccionada = area
+                areaSeguraActivada = true
+                localizacionActivada = false
+                //viewModel.actualizarLocalizacion(index, !areaSeguraActivada)
+                scope.launch {
+                    val resultado = snackbarHostState.showSnackbar(
+                        message = "Área seleccionada: ${area.nombre}",
+                        actionLabel = context.getString(R.string.aceptar)
+                    )
+                    if (resultado == SnackbarResult.ActionPerformed) {
+                        // Se cierra el snackbar
+                    }
+                }
+            },
+            onCrearArea = {
+                scope.launch {
+                    val resultado = snackbarHostState.showSnackbar(
+                        message = "Crear área en desarrollo",
+                        actionLabel = context.getString(R.string.aceptar)
+                    )
+                    if (resultado == SnackbarResult.ActionPerformed) {
+                        // Se cierra el snackbar
+                    }
+                }
+            },
+            onEliminarArea = {
+                scope.launch {
+                    val resultado = snackbarHostState.showSnackbar(
+                        message = "Eliminar área en desarrollo",
+                        actionLabel = context.getString(R.string.aceptar)
+                    )
+                    if (resultado == SnackbarResult.ActionPerformed) {
+                        // Se cierra el snackbar
+                    }
+                }
+            },
+            areaSeleccionada = areaSeguraSeleccionada // Pasamos el área seleccionada al diálogo
+        )
+    }
+
 
     if (mostrarDialogoAgregarMascota) {
         AlertDialog(
@@ -385,4 +422,73 @@ fun MostrarMapa(ubicacion: Posicion, onCerrar: () -> Unit) {
             Marker(state = MarkerState(position = ubicacionLatLng))
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SeleccionarAreaSeguraDialog(
+    onDismiss: () -> Unit,
+    onAreaSeleccionada: (AreaSegura) -> Unit, // Cambiado el tipo a AreaSegura
+    onCrearArea: () -> Unit,
+    onEliminarArea: () -> Unit,
+    areaSeleccionada: AreaSegura? // Cambiado el tipo a AreaSegura?
+) {
+    val viewModel: PropietarioViewModel = viewModel() // Obtener el ViewModel
+    val areas = viewModel.areasSeguras
+
+    var expanded by remember { mutableStateOf(false) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Seleccionar Área Segura") },
+        text = {
+            Column {
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = { expanded = !expanded }
+                ) {
+                    TextField(
+                        readOnly = true,
+                        value = areaSeleccionada?.nombre ?: "", // Mostrar el nombre del área seleccionada
+                        onValueChange = {},
+                        label = { Text("Área") },
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                        },
+                        modifier = Modifier.menuAnchor()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        areas.forEach { area ->
+                            DropdownMenuItem(
+                                text = { Text(area.nombre) }, // Mostrar el nombre del área
+                                onClick = {
+                                    onAreaSeleccionada(area)
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Button(onClick = onCrearArea) {
+                        Text("Crear Área")
+                    }
+                    Button(onClick = onEliminarArea) {
+                        Text("Eliminar Área")
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            Button(onClick = onDismiss) {
+                Text("Cerrar")
+            }
+        }
+    )
 }

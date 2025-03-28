@@ -15,7 +15,7 @@ import kotlin.random.Random
 
 class PosicionMascotaViewModel : ViewModel() {
 
-    private val _posicion = MutableStateFlow(Posicion(41.607778, 0.622472)) // Posición inicial en frente del Polivalent 1
+    private val _posicion = MutableStateFlow(Posicion(41.60831345075668, 0.6234935707600733)) // Posición inicial en la EPS
     val posicion: StateFlow<Posicion> = _posicion
 
     init {
@@ -34,7 +34,7 @@ class PosicionMascotaViewModel : ViewModel() {
 
     private fun simularMovimiento(posicionActual: Posicion): Posicion {
         // Simulación de movimiento realista
-        val velocidad = Random.nextDouble(0.00001, 0.00005) // Velocidad baja para simular movimiento realista
+        val velocidad = Random.nextDouble(0.0001, 0.00030) // Velocidad baja para simular movimiento realista
         val angulo = Random.nextDouble(0.0, 2 * Math.PI) // Ángulo aleatorio
 
         val nuevaLatitud = posicionActual.latitud + velocidad * cos(angulo)
