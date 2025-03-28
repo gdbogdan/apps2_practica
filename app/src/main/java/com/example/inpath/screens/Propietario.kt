@@ -34,6 +34,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -58,20 +59,21 @@ fun Propietario(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val scrollState = rememberScrollState()
+    var mascotaAEliminar by remember { mutableStateOf<MascotaInfo?>(null) }
+    var modoEliminar by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(24.dp)
             .verticalScroll(scrollState)
-            .drawWithContent { //Es para poder ver la barra lateral de desplazamiento
-                drawContent() // Dibuja el contenido de la Column
-
-                // Dibuja el indicador de desplazamiento
-                if (scrollState.maxValue > 0) { // Verifica si hay desplazamiento posible
-                    val scrollPorcentaje = scrollState.value.toFloat() / scrollState.maxValue.toFloat()
-                    val indicadorAltura = size.height * 0.1f // Altura del indicador
+            .drawWithContent {
+                drawContent()
+                if (scrollState.maxValue > 0) {
+                    val scrollPorcentaje =
+                        scrollState.value.toFloat() / scrollState.maxValue.toFloat()
+                    val indicadorAltura = size.height * 0.1f
                     val indicadorY = size.height * scrollPorcentaje
-
                     drawRect(
                         color = Color.Gray,
                         topLeft = Offset(size.width - 8.dp.toPx(), indicadorY),
@@ -81,7 +83,7 @@ fun Propietario(
             },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(24.dp)
-    ){
+    ) {
         viewModel.listaMascotas.forEachIndexed { index, mascota ->
             Column(
                 modifier = Modifier
@@ -97,42 +99,63 @@ fun Propietario(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Button(
-                        onClick = { viewModel.actualizarLocalizacion(index, true) },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = if (mascota.localizacionActivada) Color.Green else Color.Red
-                        )
-                    ) {
-                        Text("Localización")
-                    }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Button(
-                        onClick = {
-                            viewModel.actualizarLocalizacion(index, false)
-                            scope.launch {
-                                val resultado = snackbarHostState.showSnackbar(
-                                    message = context.getString(R.string.geofence_en_desarrollo),
-                                    actionLabel = "Aceptar"
-                                )
-                                if (resultado == SnackbarResult.ActionPerformed) {
-                                    // Se cierra el snackbar
+                    if (!modoEliminar) { // Mostrar botones solo si no está en modo eliminar
+                        Button(
+                            onClick = { viewModel.actualizarLocalizacion(index, true) },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (mascota.localizacionActivada) Color.Green else Color.Red
+                            )
+                        ) {
+                            Text("Localización")
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Button(
+                            onClick = {
+                                viewModel.actualizarLocalizacion(index, false)
+                                scope.launch {
+                                    val resultado = snackbarHostState.showSnackbar(
+                                        message = context.getString(R.string.geofence_en_desarrollo),
+                                        actionLabel = "Aceptar"
+                                    )
+                                    if (resultado == SnackbarResult.ActionPerformed) {
+                                        // Se cierra el snackbar
+                                    }
                                 }
-                            }
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = if (!mascota.localizacionActivada) Color.Green else Color.Red
-                        )
-                    ) {
-                        Text("Geofence")
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (!mascota.localizacionActivada) Color.Green else Color.Red
+                            )
+                        ) {
+                            Text("Geofence")
+                        }
+                    }
+                    if (modoEliminar) { // Mostrar botón eliminar solo en modo eliminar
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Button(
+                            onClick = { mascotaAEliminar = mascota },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                        ) {
+                            Text("Eliminar")
+                        }
                     }
                 }
             }
         }
 
-        Button(onClick = { mostrarDialogoAgregarMascota = true }) {
-            Text(stringResource(R.string.add_mascota))
+        Row {
+            Button(onClick = { mostrarDialogoAgregarMascota = true }) {
+                Text(stringResource(R.string.add_mascota))
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Button(onClick = { modoEliminar = !modoEliminar }) { // Activar/desactivar modo eliminar
+                Text(if (modoEliminar) stringResource(R.string.cancelar_eliminar) else stringResource(
+                    R.string.eliminar_mascota
+                )
+                )
+            }
         }
     }
+
 
     if (mostrarDialogoAgregarMascota) {
         AlertDialog(
@@ -239,6 +262,32 @@ fun Propietario(
                 }
             },
             properties = DialogProperties(usePlatformDefaultWidth = false)
+        )
+    }
+    if (mascotaAEliminar != null) {
+        AlertDialog(
+            onDismissRequest = { mascotaAEliminar = null },
+            title = {
+                Text(
+                    text = stringResource(R.string.borrando_mascota, mascotaAEliminar?.nombre ?: ""),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            },
+            text = { Text(stringResource(R.string.aviso_no_deshacer)) },
+            confirmButton = {
+                Button(onClick = {
+                    viewModel.eliminarMascota(mascotaAEliminar!!)
+                    mascotaAEliminar = null
+                }) {
+                    Text(stringResource(R.string.eliminar))
+                }
+            },
+            dismissButton = {
+                Button(onClick = { mascotaAEliminar = null }) {
+                    Text(stringResource(R.string.cancelar))
+                }
+            }
         )
     }
 }

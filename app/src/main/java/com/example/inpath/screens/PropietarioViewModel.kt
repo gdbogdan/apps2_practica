@@ -18,6 +18,10 @@ class PropietarioViewModel : ViewModel() {
         listaMascotas.add(mascota)
     }
 
+    fun eliminarMascota(mascota: MascotaInfo) {
+        listaMascotas.remove(mascota)
+    }
+
     fun actualizarLocalizacion(index: Int, activada: Boolean) {
         if (index in 0 until listaMascotas.size) {
             listaMascotas[index] = listaMascotas[index].copy(localizacionActivada = activada)

@@ -35,4 +35,8 @@
     <string name="wifi_datos_OK">Wi-Fi y datos móviles activos.</string>
     <string name="wi_fi_activado">Wi-Fi activo.</string>
     <string name="datos_activados">Datos móviles activos.</string>
+    <string name="cancelar_eliminar">Cancelar Eliminar</string>
+    <string name="eliminar_mascota">Eliminar mascota</string>
+    <string name="aviso_no_deshacer">Esta acción no se puede deshacer.</string>
+    <string name="borrando_mascota">Borrando a %1$s</string>
 </resources>
