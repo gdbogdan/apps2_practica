@@ -39,4 +39,15 @@
     <string name="eliminar_mascota">Eliminar mascota</string>
     <string name="aviso_no_deshacer">Esta acción no se puede deshacer.</string>
     <string name="borrando_mascota">Borrando a %1$s</string>
+    <string name="localizacion">Localización</string>
+    <string name="aceptar">Aceptar</string>
+    <string name="area_segura">Area segura</string>
+    <string name="macho">Macho</string>
+    <string name="hembra">Hembra</string>
+    <string name="perro">Perro</string>
+    <string name="gato">Gato</string>
+    <string name="posicion_mascota">Posición de la mascota:</string>
+    <string name="latitud">Latitud: %1$s</string>
+    <string name="longitud">Longitud: %1$s</string>
+    <string name="mostrar_en_mapa">Ver en el mapa</string>
 </resources>

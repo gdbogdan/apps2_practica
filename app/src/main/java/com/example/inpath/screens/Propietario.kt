@@ -61,6 +61,8 @@ fun Propietario(
     val scrollState = rememberScrollState()
     var mascotaAEliminar by remember { mutableStateOf<MascotaInfo?>(null) }
     var modoEliminar by remember { mutableStateOf(false) }
+    var localizacionActivada by remember { mutableStateOf(false) }
+    var areaSeguraActivada by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -99,23 +101,29 @@ fun Propietario(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    if (!modoEliminar) { // Mostrar botones solo si no está en modo eliminar
+                    if (!modoEliminar) {
                         Button(
-                            onClick = { viewModel.actualizarLocalizacion(index, true) },
+                            onClick = {
+                                localizacionActivada = !localizacionActivada
+                                areaSeguraActivada = false
+                                viewModel.actualizarLocalizacion(index, localizacionActivada)
+                            },
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = if (mascota.localizacionActivada) Color.Green else Color.Red
+                                containerColor = if (localizacionActivada) Color.Green else Color.LightGray
                             )
                         ) {
-                            Text("Localización")
+                            Text(stringResource(R.string.localizacion))
                         }
                         Spacer(modifier = Modifier.width(8.dp))
                         Button(
                             onClick = {
-                                viewModel.actualizarLocalizacion(index, false)
+                                areaSeguraActivada = !areaSeguraActivada
+                                localizacionActivada = false
+                                viewModel.actualizarLocalizacion(index, !areaSeguraActivada)
                                 scope.launch {
                                     val resultado = snackbarHostState.showSnackbar(
                                         message = context.getString(R.string.geofence_en_desarrollo),
-                                        actionLabel = "Aceptar"
+                                        actionLabel = context.getString(R.string.aceptar)
                                     )
                                     if (resultado == SnackbarResult.ActionPerformed) {
                                         // Se cierra el snackbar
@@ -123,19 +131,29 @@ fun Propietario(
                                 }
                             },
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = if (!mascota.localizacionActivada) Color.Green else Color.Red
+                                containerColor = if (areaSeguraActivada) Color.Green else Color.LightGray
                             )
                         ) {
-                            Text("Geofence")
+                            Text(stringResource(R.string.area_segura))
                         }
                     }
-                    if (modoEliminar) { // Mostrar botón eliminar solo en modo eliminar
+                    if (modoEliminar) {
                         Spacer(modifier = Modifier.width(8.dp))
                         Button(
                             onClick = { mascotaAEliminar = mascota },
                             colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
                         ) {
-                            Text("Eliminar")
+                            Text(stringResource(R.string.eliminar))
+                        }
+                    }
+                }
+                if (!modoEliminar) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Button(onClick = { /*TODO: Mostrar en el mapa*/ }) {
+                            Text(stringResource(R.string.mostrar_en_mapa))
                         }
                     }
                 }
@@ -147,15 +165,13 @@ fun Propietario(
                 Text(stringResource(R.string.add_mascota))
             }
             Spacer(modifier = Modifier.width(8.dp))
-            Button(onClick = { modoEliminar = !modoEliminar }) { // Activar/desactivar modo eliminar
+            Button(onClick = { modoEliminar = !modoEliminar }) {
                 Text(if (modoEliminar) stringResource(R.string.cancelar_eliminar) else stringResource(
                     R.string.eliminar_mascota
-                )
-                )
+                ))
             }
         }
     }
-
 
     if (mostrarDialogoAgregarMascota) {
         AlertDialog(
@@ -163,14 +179,11 @@ fun Propietario(
             title = { Text(stringResource(R.string.add_mascota)) },
             text = {
                 Column {
-                    // Nombre de la mascota
                     TextField(
                         value = nombreMascota,
                         onValueChange = { nombreMascota = it },
                         label = { Text(stringResource(R.string.nombre)) }
                     )
-
-                    // Selector de Sexo
                     ExposedDropdownMenuBox(
                         expanded = expandedSexo,
                         onExpandedChange = { expandedSexo = it }
@@ -190,14 +203,14 @@ fun Propietario(
                             onDismissRequest = { expandedSexo = false }
                         ) {
                             DropdownMenuItem(
-                                text = { Text("Macho") },
+                                text = { Text(stringResource(R.string.macho)) },
                                 onClick = {
                                     sexoMascota = "Macho"
                                     expandedSexo = false
                                 }
                             )
                             DropdownMenuItem(
-                                text = { Text("Hembra") },
+                                text = { Text(stringResource(R.string.hembra)) },
                                 onClick = {
                                     sexoMascota = "Hembra"
                                     expandedSexo = false
@@ -205,8 +218,6 @@ fun Propietario(
                             )
                         }
                     }
-
-                    // Selector de Tipo
                     ExposedDropdownMenuBox(
                         expanded = expandedTipo,
                         onExpandedChange = { expandedTipo = it }
@@ -226,14 +237,14 @@ fun Propietario(
                             onDismissRequest = { expandedTipo = false }
                         ) {
                             DropdownMenuItem(
-                                text = { Text("Perro") },
+                                text = { Text(stringResource(R.string.perro)) },
                                 onClick = {
                                     tipoMascota = "Perro"
                                     expandedTipo = false
                                 }
                             )
                             DropdownMenuItem(
-                                text = { Text("Gato") },
+                                text = { Text(stringResource(R.string.gato)) },
                                 onClick = {
                                     tipoMascota = "Gato"
                                     expandedTipo = false

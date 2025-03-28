@@ -122,15 +122,15 @@ fun Mascota(
                 }
             }
             Text(
-                text = "Posición de la mascota:",
+                text = stringResource(R.string.posicion_mascota),
                 fontSize = 20.sp
             )
             Text(
-                text = "Latitud: ${posicionMascota.latitud}",
+                text = stringResource(R.string.latitud, posicionMascota.latitud.toString()),
                 fontSize = 16.sp
             )
             Text(
-                text = "Longitud: ${posicionMascota.longitud}",
+                text = stringResource(R.string.longitud, posicionMascota.longitud.toString()),
                 fontSize = 16.sp
             )
         } else {
