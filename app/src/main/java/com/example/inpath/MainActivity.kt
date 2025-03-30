@@ -2,6 +2,7 @@ package com.example.inpath
 
 import InternetViewModel
 import PosicionMascotaViewModel
+import PropietarioViewModel
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
@@ -51,7 +52,6 @@ import com.example.inpath.R.string
 import com.example.inpath.screens.Inicio_sesion
 import com.example.inpath.screens.Mascota
 import com.example.inpath.screens.Propietario
-import com.example.inpath.screens.PropietarioViewModel
 import com.example.inpath.screens.Seleccion_tipo
 import com.example.inpath.ui.theme.InPathTheme
 
