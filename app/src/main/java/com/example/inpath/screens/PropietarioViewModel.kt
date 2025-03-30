@@ -1,3 +1,4 @@
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -51,8 +52,14 @@ class PropietarioViewModel : ViewModel() {
     }
 
     fun eliminarAreaSegura(area: AreaSegura) {
-        _areasSeguras.value = _areasSeguras.value.toMutableList().apply {
-            remove(area)
+        Log.d("PropietarioViewModel", "Eliminando área: ${area.nombre}")
+        try {
+            _areasSeguras.value = _areasSeguras.value.toMutableList().apply {
+                remove(area)
+            }
+            Log.d("PropietarioViewModel", "Área eliminada correctamente: ${area.nombre}")
+        } catch (e: Exception) {
+            Log.e("PropietarioViewModel", "Error al eliminar área: ${area.nombre}", e)
         }
     }
 }

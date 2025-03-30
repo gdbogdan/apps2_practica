@@ -425,7 +425,7 @@ fun SeleccionarAreaSeguraDialog(
     var areaSeleccionada by remember { mutableStateOf<AreaSegura?>(null) }
     var mostrarCrearAreaDialog by remember { mutableStateOf(false) }
     var areaAEliminar by remember { mutableStateOf<AreaSegura?>(null) }
-    var modoEliminarArea by remember { mutableStateOf(false) } // Nuevo estado
+    var mostrarDialogoEliminarAreas by remember { mutableStateOf(false) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -468,8 +468,8 @@ fun SeleccionarAreaSeguraDialog(
                     Button(onClick = { mostrarCrearAreaDialog = true }) {
                         Text("Crear Área")
                     }
-                    Button(onClick = { modoEliminarArea = !modoEliminarArea }) {
-                        Text(if (modoEliminarArea) "Cancelar Eliminar" else "Eliminar Área")
+                    Button(onClick = { mostrarDialogoEliminarAreas = true }) {
+                        Text("Eliminar Área")
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
@@ -506,30 +506,59 @@ fun SeleccionarAreaSeguraDialog(
         )
     }
 
-    if (modoEliminarArea && areaSeleccionada != null) {
+    if (mostrarDialogoEliminarAreas) {
         AlertDialog(
-            onDismissRequest = { modoEliminarArea = false },
-            title = {
-                Text(
-                    text = "Eliminar área ${areaSeleccionada?.nombre ?: ""}",
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+            onDismissRequest = { mostrarDialogoEliminarAreas = false },
+            title = { Text("¿Qué área desea eliminar?") },
+            text = {
+                Column {
+                    areas.forEach { area ->
+                        Row(
+                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Button(
+                                onClick = { areaAEliminar = area },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.Red) // Fondo rojo
+
+                            ) {
+                                Text(area.nombre)
+                            }
+                        }
+                    }
+                }
             },
+            confirmButton = {
+                Button(onClick = { mostrarDialogoEliminarAreas = false }) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
+
+    if (areaAEliminar != null) {
+        AlertDialog(
+            onDismissRequest = { areaAEliminar = null },
+            title = { Text("Eliminar área ${areaAEliminar?.nombre ?: ""}") },
             text = { Text("¿Estás seguro de que quieres eliminar esta área? Esta acción no se puede deshacer.") },
             confirmButton = {
                 Button(onClick = {
-                    viewModel.eliminarAreaSegura(areaSeleccionada!!)
-                    scope.launch {
-                        snackbarHostState.showSnackbar("Área ${areaSeleccionada!!.nombre} eliminada correctamente")
+                    if (areaAEliminar != null) {
+                        val nombreArea = areaAEliminar!!.nombre  // Guardamos el nombre antes de anular la referencia
+                        viewModel.eliminarAreaSegura(areaAEliminar!!)
+                        areaAEliminar = null  // Ahora sí lo anulamos
+
+                        scope.launch {
+                            snackbarHostState.showSnackbar("Área $nombreArea eliminada correctamente")
+                        }
                     }
-                    modoEliminarArea = false
                 }) {
                     Text("Eliminar")
                 }
             },
             dismissButton = {
-                Button(onClick = { modoEliminarArea = false }) {
+                Button(onClick = { areaAEliminar = null }) {
                     Text("Cancelar")
                 }
             }
