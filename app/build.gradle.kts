@@ -1,8 +1,17 @@
+import com.android.build.gradle.internal.scope.ProjectInfo.Companion.getBaseName
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
 }
+
+val localProperties = Properties().apply{
+    load(File(rootDir, "local.properties").inputStream())
+}
+
+val googleMapsApiKey: String = localProperties.getProperty("GOOGLE_MAPS_API_KEY") ?: ""
 
 android {
     namespace = "com.example.inpath"
