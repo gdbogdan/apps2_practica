@@ -1,0 +1,40 @@
+[debug] [2025-04-29T11:28:04.356Z] ----------------------------------------------------------------------
+[debug] [2025-04-29T11:28:04.358Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\Gabriel\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init
+[debug] [2025-04-29T11:28:04.358Z] CLI Version:   14.2.1
+[debug] [2025-04-29T11:28:04.358Z] Platform:      win32
+[debug] [2025-04-29T11:28:04.358Z] Node Version:  v22.12.0
+[debug] [2025-04-29T11:28:04.359Z] Time:          Tue Apr 29 2025 13:28:04 GMT+0200 (hora de verano de Europa central)
+[debug] [2025-04-29T11:28:04.359Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-04-29T11:28:04.363Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-04-29T11:28:04.363Z] > authorizing via signed-in user (bogdangd94@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\Users\gabri\Desktop\APPS2\PRACTICA_1\InPath
+
+Before we get started, keep in mind:
+
+  * You are currently outside your home directory
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] but for now we'll just set up a default project.
+[info] 
+[debug] [2025-04-29T11:31:53.001Z] Checked if tokens are valid: true, expires at: 1745929194885
+[debug] [2025-04-29T11:31:53.002Z] Checked if tokens are valid: true, expires at: 1745929194885
+[debug] [2025-04-29T11:31:53.003Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects pageSize=100
+[debug] [2025-04-29T11:31:53.539Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects 200
+[debug] [2025-04-29T11:31:53.539Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects [omitted]
+[info] i  Using project inpath-3c70f (InPath) 
+[info] 
+=== Emulators Setup
