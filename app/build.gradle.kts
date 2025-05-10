@@ -1,4 +1,3 @@
-import com.android.build.gradle.internal.scope.ProjectInfo.Companion.getBaseName
 import java.util.Properties
 
 plugins {
@@ -23,6 +22,8 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
+
+        resValue("string", "google_maps_key", googleMapsApiKey)
     }
 
     buildTypes {
