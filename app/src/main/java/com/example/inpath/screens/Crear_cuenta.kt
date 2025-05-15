@@ -21,25 +21,25 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.inpath.R
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.text.style.TextAlign
 
 @Composable
-fun Inicio_sesion(
+fun Crear_cuenta(
     navHostController: NavHostController,
     auth: FirebaseAuth,
     snackbarHostState: SnackbarHostState
-){
+) {
     var email:String by remember { mutableStateOf("") }
     var password:String by remember { mutableStateOf("") }
     val context = LocalContext.current
@@ -50,15 +50,16 @@ fun Inicio_sesion(
             .fillMaxSize()
             .padding(48.dp),
         horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+    ){
         Text(
             text = stringResource(R.string.usuario),
             modifier = Modifier.fillMaxWidth()
         )
         TextField(
             value = email,
-            onValueChange = { email = it },
-            modifier = Modifier.fillMaxWidth() )
+            onValueChange = {email = it},
+            modifier = Modifier.fillMaxWidth()
+        )
         Spacer(Modifier.height(48.dp))
         Text(
             text = stringResource(R.string.contraseña),
@@ -66,7 +67,7 @@ fun Inicio_sesion(
         )
         TextField(
             value = password,
-            onValueChange = { password = it },
+            onValueChange = {password = it},
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth()
         )
@@ -77,21 +78,21 @@ fun Inicio_sesion(
         ){
             Button(
                 onClick = {
-                    auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            Log.i("Inicio sesion", "Inicio OK")
+                    auth.createUserWithEmailAndPassword(email,password).addOnCompleteListener { task ->
+                        if(task.isSuccessful){
+                            Log.i("Crear cuenta", "Cuenta creada correctamente")
                             scope.launch {
                                 snackbarHostState.showSnackbar(
-                                    message = context.getString(R.string.inicio_sesion_exito),
+                                    message = context.getString(R.string.cuenta_creada_exito),
                                     duration = SnackbarDuration.Long
                                 )
                             }
-                            navHostController.navigate("Seleccion_tipo_usuario")
-                        } else {
-                            Log.i("Inicio sesion", "Inicio KO")
+                            navHostController.navigate("Seleccion_Acceso_Cuenta")
+                        }else{
+                            Log.i("Crear cuenta", "Cuenta no se ha podido crear")
                             scope.launch {
                                 snackbarHostState.showSnackbar(
-                                    message = context.getString(R.string.inicio_sesion_error),
+                                    message =  context.getString(R.string.error_crear_cuenta),
                                     duration = SnackbarDuration.Long
                                 )
                             }
@@ -99,18 +100,20 @@ fun Inicio_sesion(
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
-            ) {
+
+            ){
                 Text(
-                    text = stringResource(R.string.iniciar_sesion)
+                    text = stringResource(R.string.crear_cuenta)
                 )
             }
         }
+
         Text(
-            text = stringResource(R.string.crear_cuenta2),
+            text = stringResource(R.string.iniciar_sesion2),
             color = Color.Black,
             modifier = Modifier
                 .padding(top = 12.dp)
-                .clickable(onClick = { navHostController.navigate("Crear_cuenta") })
+                .clickable(onClick = {navHostController.navigate("Inicio_sesion")})
                 .fillMaxWidth(),
             textAlign = TextAlign.Center
         )

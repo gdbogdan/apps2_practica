@@ -1,9 +1,9 @@
-package com.example.inpath
+/*package com.example.inpath
 
 import InternetViewModel
 import PosicionMascotaViewModel
 import PropietarioViewModel
-import android.annotation.SuppressLint
+import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
@@ -45,29 +45,24 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.inpath.screens.Crear_cuenta
+import com.example.inpath.R.string
 import com.example.inpath.screens.Inicio_sesion
 import com.example.inpath.screens.Mascota
 import com.example.inpath.screens.Propietario
-import com.example.inpath.screens.Seleccion_Acceso_Cuenta
-import com.example.inpath.screens.Seleccion_tipo_usuario
+import com.example.inpath.screens.Seleccion_tipo
 import com.example.inpath.ui.theme.InPathTheme
-import com.google.firebase.auth.FirebaseAuth
+
 
 class MainActivity : ComponentActivity() {
-    private lateinit var auth: FirebaseAuth
-
-    @SuppressLint("ServiceCast")
+    private lateinit var navHostController: NavHostController
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        auth = FirebaseAuth.getInstance()
         setContent {
             val navHostController = rememberNavController()
             val internetViewModel: InternetViewModel = viewModel()
@@ -77,10 +72,9 @@ class MainActivity : ComponentActivity() {
 
             internetViewModel.comprobarDisponibilidadRed(context) //Compruebo si hay o no internet al inicial la app
 
-
             // Registrar NetworkCallback
             DisposableEffect(Unit) {
-                val connectivityManager = context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+                val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
                 val networkRequest = NetworkRequest.Builder()
                     .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
                     .build()
@@ -103,12 +97,8 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            val estadoRedState = internetViewModel.estadoRed.observeAsState()
-            val redDisponible by internetViewModel.redDisponible.observeAsState(initial = true)
-            val estadoRed = estadoRedState.value
-
-            val currentBackStackEntry by navHostController.currentBackStackEntryAsState()
-            val currentRoute = currentBackStackEntry?.destination?.route
+            val estadoRed by internetViewModel.estadoRed.observeAsState()
+            val redDisponible by internetViewModel.redDisponible.observeAsState(initial = true) // Asumo que hay internet
 
             LaunchedEffect(estadoRed) {
                 estadoRed?.let {
@@ -119,72 +109,40 @@ class MainActivity : ComponentActivity() {
             }
 
             InPathTheme {
-                var esPropietario by rememberSaveable { mutableStateOf(false) }
-
-                val hideTopBottomBarOnRoutes = listOf("Seleccion_Acceso_Cuenta", "Inicio_sesion", "Crear_cuenta")
-                val shouldShowTopBottomBar = currentRoute !in hideTopBottomBarOnRoutes
-
+                var esPropietario by rememberSaveable { mutableStateOf(false) } //true -> propietario, false -> mascota (default)
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
-                    topBar = { if (shouldShowTopBottomBar) TopAppBar() },
-                    bottomBar = {
-                        if (shouldShowTopBottomBar) {
-                            BottomBar(
-                                navHostController,
-                                esPropietario,
-                                cambioPropietario = { esPropietario = it },
-                                redDisponible = redDisponible
-                            )
-                        }
-                    },
+                    topBar = { TopAppBar() },
+                    bottomBar = { BottomBar(navHostController, esPropietario, cambioPropietario = { esPropietario = it }, redDisponible = redDisponible) }, //Paso redDisponible
                     snackbarHost = { SnackbarHost(snackbarHostState) }
                 ) { innerPadding ->
-                    if (redDisponible == true) {
+                    if (redDisponible) { // Solo muestra la navegación si hay conexión
                         NavHost(
                             navController = navHostController,
-                            startDestination = "Seleccion_Acceso_Cuenta",
+                            startDestination = "Inicio_sesion",
                             modifier = Modifier.padding(innerPadding)
                         ) {
-                            composable("Seleccion_Acceso_Cuenta") {
-                                Seleccion_Acceso_Cuenta(navHostController)
-                            }
                             composable("Inicio_sesion") {
-                                Inicio_sesion(navHostController, auth, snackbarHostState = snackbarHostState)
+                                Inicio_sesion(navHostController)
                             }
-                            composable ("Crear_cuenta"){
-                                Crear_cuenta(navHostController, auth, snackbarHostState = snackbarHostState)
-                            }
-                            composable("Seleccion_tipo_usuario") {
+                            composable("Seleccion_tipo") {
                                 val redDisponibleState by internetViewModel.redDisponible.observeAsState(initial = false)
-                                Seleccion_tipo_usuario(
-                                    navHostController,
-                                    redDisponible = redDisponibleState
-                                )
+                                Seleccion_tipo(navHostController, redDisponible = redDisponibleState)
                             }
                             composable("Propietario") {
                                 val redDisponibleState by internetViewModel.redDisponible.observeAsState(initial = false)
-                                Propietario(
-                                    navController = navHostController,
-                                    viewModel = viewModel<PropietarioViewModel>(),
-                                    snackbarHostState = snackbarHostState,
-                                    redDisponible = redDisponibleState,
-                                    posicionViewModel = posicionMascotaViewModel
-                                )
+                                Propietario(navHostController, viewModel = viewModel<PropietarioViewModel>(), snackbarHostState = snackbarHostState, redDisponible = redDisponibleState, posicionViewModel = posicionMascotaViewModel)
                             }
                             composable("Mascota") {
                                 val redDisponibleState by internetViewModel.redDisponible.observeAsState(initial = false)
-                                Mascota(
-                                    navHostController,
-                                    snackbarHostState = snackbarHostState,
-                                    redDisponible = redDisponibleState,
-                                    posicionViewModel = posicionMascotaViewModel
-                                )
+                                Mascota(navHostController, snackbarHostState = snackbarHostState, redDisponible = redDisponibleState, posicionViewModel = posicionMascotaViewModel)
                             }
                         }
                     } else {
+                        // Muestra un mensaje o una pantalla de error si no hay conexión
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                             Text(
-                                text = stringResource(R.string.sinConexion),
+                                text = stringResource(string.sinConexion),
                                 modifier = Modifier.padding(innerPadding),
                                 textAlign = TextAlign.Center
                             )
@@ -201,7 +159,7 @@ class MainActivity : ComponentActivity() {
 fun TopAppBar(){
     CenterAlignedTopAppBar(
         title={
-            Text(text = stringResource(R.string.top_bar),
+            Text(text = stringResource(string.top_bar),
                 color = androidx.compose.ui.graphics.Color.Black,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth())
@@ -219,10 +177,10 @@ fun BottomBar(navController: NavController, esPropietario: Boolean, cambioPropie
             icon = {
                 Icon(
                     painterResource(id = R.drawable.usuario),
-                    contentDescription = stringResource(R.string.icono_del_propietario)
+                    contentDescription = stringResource(string.icono_del_propietario)
                 )
             },
-            label = { Text(stringResource(R.string.propietario)) },
+            label = { Text(stringResource(string.propietario)) },
             selected = esPropietario,
             onClick = {
                 if (redDisponible) {
@@ -238,10 +196,10 @@ fun BottomBar(navController: NavController, esPropietario: Boolean, cambioPropie
             icon = {
                 Icon(
                     painterResource(id = R.drawable.pata),
-                    contentDescription = stringResource(R.string.icono_de_la_huella_de_la_mascota)
+                    contentDescription = stringResource(string.icono_de_la_huella_de_la_mascota)
                 )
             },
-            label = { Text(stringResource(R.string.mascota)) },
+            label = { Text(stringResource(string.mascota)) },
             selected = !esPropietario,
             onClick = {
                 if (redDisponible) {
@@ -254,4 +212,4 @@ fun BottomBar(navController: NavController, esPropietario: Boolean, cambioPropie
             }
         )
     }
-}
+}*/
