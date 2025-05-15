@@ -29,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.inpath.R
 import com.google.firebase.auth.FirebaseAuth
@@ -51,6 +52,11 @@ fun Crear_cuenta(
             .padding(48.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
+        Text(
+            text = stringResource(R.string.crear_cuenta_g),
+            fontSize = 36.sp
+        )
+        Spacer(Modifier.height(36.dp))
         Text(
             text = stringResource(R.string.usuario),
             modifier = Modifier.fillMaxWidth()

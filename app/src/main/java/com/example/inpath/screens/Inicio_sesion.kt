@@ -33,6 +33,7 @@ import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun Inicio_sesion(
@@ -51,6 +52,11 @@ fun Inicio_sesion(
             .padding(48.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Text(
+            text = stringResource(R.string.iniciar_sesion_g),
+            fontSize = 36.sp
+        )
+        Spacer(Modifier.height(36.dp))
         Text(
             text = stringResource(R.string.usuario),
             modifier = Modifier.fillMaxWidth()
