@@ -6,10 +6,9 @@
     <!-- Página de inicio -->
     <string name="usuario">Usuario</string>
     <string name="contraseña">Contraseña</string>
-    <string name="crear_cuenta">¿No tienes cuenta?</string>
-    <string name="crear_cuenta_hiper">Crear cuenta</string>
-    <string name="recordar_contraseña">¿No recuerdas la contraseña?</string>
-    <string name="recordar_contraseña_hiper">Recordar contraseña</string>
+    <string name="crear_cuenta">Crear cuenta</string>
+    <string name="crear_cuenta2">¿No tienes cuenta? Crear cuenta</string>
+    <string name="recordar_contraseña">Recordar contraseña</string>
 
     <string name="propietario">Propietario</string>
     <string name="mascota">Mascota</string>
@@ -51,4 +50,13 @@
     <string name="longitud">Longitud: %1$s</string>
     <string name="mostrar_en_mapa">Ver en el mapa</string>
     <string name="cerrar_mapa">Cerrar el mapa</string>
+    <string name="inicio_sesion1">Ayudamos a localizar a tu mascota</string>
+    <string name="iniciar_sesion">Iniciar sesión</string>
+    <string name="iniciar_sesion2">¿Ya tienes cuenta? Inicia sesión</string>
+    <string name="iniciar_sesion_google">Iniciar sesión con Google</string>
+    <string name="cuenta_creada_exito">Se ha creado la cuenta correctamente.</string>
+    <string name="error_crear_cuenta">No se ha podido crear la cuenta.</string>
+    <string name="inicio_sesion_exito">Se ha iniciado sesión correctamente.</string>
+    <string name="inicio_sesion_error">No se ha podido iniciar la sesión.</string>
+
 </resources>

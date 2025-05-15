@@ -17,7 +17,7 @@ import androidx.navigation.NavController
 import com.example.inpath.R
 
 @Composable
-fun Seleccion_tipo(
+fun Seleccion_tipo_usuario(
     navController: NavController,
     redDisponible: Boolean
 ){
