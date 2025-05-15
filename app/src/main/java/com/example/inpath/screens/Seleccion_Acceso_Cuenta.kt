@@ -14,11 +14,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -27,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.inpath.R
+import androidx.compose.foundation.isSystemInDarkTheme
 
 
 @Composable
@@ -56,6 +59,7 @@ fun Seleccion_Acceso_Cuenta(navHostController: NavHostController) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        //Usuario y contraseña
         Button(
             onClick = { navHostController.navigate("Inicio_sesion") },
             modifier = Modifier
@@ -65,15 +69,17 @@ fun Seleccion_Acceso_Cuenta(navHostController: NavHostController) {
             Text(text = stringResource(R.string.iniciar_sesion))
         }
 
+        //Google
         Boton_Personalizado(
             Modifier
                 .clickable { /*TODO: Inicio sesión con Google Signin*/ }
                 .padding(top = 8.dp)
         )
 
+        val textColor = if (isSystemInDarkTheme()) Color.White else Color.Black
         Text(
             text = stringResource(R.string.crear_cuenta),
-            color = Color.Black,
+            color = textColor,
             modifier = Modifier.padding(top = 12.dp).clickable(onClick = {navHostController.navigate("Crear_cuenta")})
         )
 
@@ -83,13 +89,16 @@ fun Seleccion_Acceso_Cuenta(navHostController: NavHostController) {
 
 
 @Composable
-fun Boton_Personalizado(modifier: Modifier) {
+fun Boton_Personalizado(modifier: Modifier = Modifier) {
+    val buttonShape = RoundedCornerShape(percent = 50)
+
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(48.dp)
-            .background(color = Color.White)
-            .border(2.dp, color = Color.Black, CircleShape),
+            .background(color = Color.White, shape = buttonShape)
+            .clip(buttonShape)
+            .border(2.dp, color = Color.Black, shape = buttonShape),
         contentAlignment = Alignment.CenterStart
     ) {
         Image(
@@ -102,7 +111,8 @@ fun Boton_Personalizado(modifier: Modifier) {
         Text(
             text = stringResource(R.string.iniciar_sesion_google),
             modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            color = Color.Black
         )
     }
 }
