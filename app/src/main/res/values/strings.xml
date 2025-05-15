@@ -58,5 +58,7 @@
     <string name="error_crear_cuenta">No se ha podido crear la cuenta.</string>
     <string name="inicio_sesion_exito">Se ha iniciado sesión correctamente.</string>
     <string name="inicio_sesion_error">No se ha podido iniciar la sesión.</string>
+    <string name="crear_cuenta_g">CREAR CUENTA</string>
+    <string name="iniciar_sesion_g">INICIAR SESIÓN</string>
 
 </resources>
