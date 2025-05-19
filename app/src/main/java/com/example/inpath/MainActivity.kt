@@ -1,15 +1,20 @@
+@file:Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
+
 package com.example.inpath
 
 import InternetViewModel
 import PosicionMascotaViewModel
 import PropietarioViewModel
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -57,6 +62,7 @@ import com.example.inpath.screens.Seleccion_Acceso_Cuenta
 import com.example.inpath.screens.Seleccion_tipo_usuario
 import com.example.inpath.ui.theme.InPathTheme
 import com.google.firebase.auth.FirebaseAuth
+import java.security.MessageDigest
 
 class MainActivity : ComponentActivity() {
     private lateinit var auth: FirebaseAuth
@@ -64,8 +70,13 @@ class MainActivity : ComponentActivity() {
     @SuppressLint("ServiceCast")
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
+        //Para realizar comprobaciones varias
+        printSha1(this)
 
         super.onCreate(savedInstanceState)
+        val apiKey = getString(R.string.google_maps_key)
+        Log.d("MAPS_API_KEY", "Clave usada: $apiKey")
+
         enableEdgeToEdge()
         auth = FirebaseAuth.getInstance()
         setContent {
@@ -146,7 +157,7 @@ class MainActivity : ComponentActivity() {
                             modifier = Modifier.padding(innerPadding)
                         ) {
                             composable("Seleccion_Acceso_Cuenta") {
-                                Seleccion_Acceso_Cuenta(navHostController)
+                                Seleccion_Acceso_Cuenta(navHostController, auth, snackbarHostState)
                             }
                             composable("Inicio_sesion") {
                                 Inicio_sesion(navHostController, auth, snackbarHostState = snackbarHostState)
@@ -194,6 +205,16 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+}
+
+@RequiresApi(Build.VERSION_CODES.P)
+fun printSha1(context: Context) {
+    val info = context.packageManager.getPackageInfo(context.packageName, PackageManager.GET_SIGNING_CERTIFICATES)
+    val cert = info.signingInfo?.apkContentsSigners[0]?.toByteArray()
+    val md = MessageDigest.getInstance("SHA1")
+    val sha1 = md.digest(cert)
+    val hex = sha1.joinToString(":") { "%02X".format(it) }
+    Log.d("SHA1_DEBUG", "App está firmada con: $hex")
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
