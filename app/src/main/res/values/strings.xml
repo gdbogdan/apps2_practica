@@ -60,5 +60,9 @@
     <string name="inicio_sesion_error">No se ha podido iniciar la sesión.</string>
     <string name="crear_cuenta_g">CREAR CUENTA</string>
     <string name="iniciar_sesion_g">INICIAR SESIÓN</string>
+    <string name="bienvenida_usuario">!BIENVENID@¡, %1$s</string>
+    <string name="intentando_iniciar_sesion_google">Intentando iniciar sesión con Google...</string>
+    <string name="inicio_sesion_correcto_google">Inicio de sesión Google exitoso. Navegando a \'Seleccion_tipo_usuario\'</string>
+    <string name="error_inicio_sesion_google">Error al iniciar sesión con Google.</string>
 
 </resources>

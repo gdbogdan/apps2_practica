@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    alias (libs.plugins.googleServices)
+    alias(libs.plugins.gms.google.services)
     alias (libs.plugins.crashlytics)
 }
 
@@ -26,19 +26,32 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        resValue("string", "google_maps_key", googleMapsApiKey)
+        resValue("string", "google_maps_key", "\"$googleMapsApiKey\"")
+    }
+
+    signingConfigs {
+        create("custom"){
+            storeFile = file("C:/Users/gabri/Desktop/APPS2/PRACTICA_1/InPath/app/keystore/InPath.jks")
+            storePassword = "mypass"
+            keyAlias = "myalias"
+            keyPassword = "mypass"
+        }
     }
 
     buildTypes {
-        release {
+        getByName("debug") {
+            signingConfig = signingConfigs.getByName("custom")
+        }
+        getByName("release") {
+            signingConfig = signingConfigs.getByName("custom")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
-
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -70,9 +83,13 @@ dependencies {
     //Authentication:
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.crashlytics)
-    implementation(libs.firebase.auth)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.androidx.credentials)
+    implementation(libs.googleid)
 
     implementation(libs.androidx.appcompat)
+    implementation(libs.google.firebase.auth.ktx)
+    implementation(libs.firebase.auth.ktx)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
