@@ -3,8 +3,7 @@
 package com.example.inpath
 
 import InternetViewModel
-import PosicionMascotaViewModel
-import PropietarioViewModel
+import com.example.inpath.screens.PropietarioViewModel
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
@@ -84,7 +83,6 @@ class MainActivity : ComponentActivity() {
             val internetViewModel: InternetViewModel = viewModel()
             val context = LocalContext.current
             val snackbarHostState = remember { SnackbarHostState() }
-            val posicionMascotaViewModel: PosicionMascotaViewModel = viewModel()
 
             internetViewModel.comprobarDisponibilidadRed(context) //Compruebo si hay o no internet al inicial la app
 
@@ -178,8 +176,7 @@ class MainActivity : ComponentActivity() {
                                     navController = navHostController,
                                     viewModel = viewModel<PropietarioViewModel>(),
                                     snackbarHostState = snackbarHostState,
-                                    redDisponible = redDisponibleState,
-                                    posicionViewModel = posicionMascotaViewModel
+                                    redDisponible = redDisponibleState
                                 )
                             }
                             composable("Mascota") {
@@ -187,8 +184,7 @@ class MainActivity : ComponentActivity() {
                                 Mascota(
                                     navHostController,
                                     snackbarHostState = snackbarHostState,
-                                    redDisponible = redDisponibleState,
-                                    posicionViewModel = posicionMascotaViewModel
+                                    redDisponible = redDisponibleState
                                 )
                             }
                         }
