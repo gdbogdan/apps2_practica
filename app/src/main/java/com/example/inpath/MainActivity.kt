@@ -3,7 +3,7 @@
 package com.example.inpath
 
 import InternetViewModel
-import com.example.inpath.screens.PropietarioViewModel
+import com.example.inpath.screens.propietario.PropietarioViewModel
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
@@ -53,11 +53,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.inpath.screens.Crear_cuenta
-import com.example.inpath.screens.Inicio_sesion
-import com.example.inpath.screens.Mascota
-import com.example.inpath.screens.Propietario
-import com.example.inpath.screens.Seleccion_Acceso_Cuenta
+import com.example.inpath.screens.inicio_sesion.Crear_cuenta
+import com.example.inpath.screens.inicio_sesion.Inicio_sesion
+import com.example.inpath.screens.mascota.Mascota
+import com.example.inpath.screens.propietario.Propietario
+import com.example.inpath.screens.inicio_sesion.Seleccion_Acceso_Cuenta
 import com.example.inpath.screens.Seleccion_tipo_usuario
 import com.example.inpath.ui.theme.InPathTheme
 import com.google.firebase.auth.FirebaseAuth

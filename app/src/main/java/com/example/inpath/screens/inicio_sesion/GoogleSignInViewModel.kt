@@ -1,4 +1,4 @@
-package com.example.inpath.screens
+package com.example.inpath.screens.inicio_sesion
 
 import android.app.Application
 import android.content.Context
@@ -9,7 +9,6 @@ import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.GetCredentialResponse
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.viewModelScope // Importa viewModelScope
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
@@ -19,13 +18,12 @@ import kotlinx.coroutines.tasks.await
 import java.security.MessageDigest
 import java.util.UUID
 import kotlin.coroutines.cancellation.CancellationException
-import kotlinx.coroutines.launch // Importa para usar launch
 
 class GoogleSignInViewModel(
     private val auth: FirebaseAuth,
-    application: Application // Mantenemos Application para el super constructor
+    application: Application
 ) : AndroidViewModel(application) {
-    private val credentialManager = CredentialManager.create(getApplication())
+    private val credentialManager = CredentialManager.Companion.create(getApplication())
 
     fun isSignedIn(): Boolean {
         return auth.currentUser != null
@@ -57,11 +55,11 @@ class GoogleSignInViewModel(
         return credentialManager.getCredential(request = request, context = context)
     }
 
-    suspend fun handleSignIn(result: GetCredentialResponse, context: Context): Boolean { // Añade context
+    suspend fun handleSignIn(result: GetCredentialResponse, context: Context): Boolean {
         val credential = result.credential
-        if (credential is CustomCredential && credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+        if (credential is CustomCredential && credential.type == GoogleIdTokenCredential.Companion.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
             try {
-                val tokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+                val tokenCredential = GoogleIdTokenCredential.Companion.createFrom(credential.data)
                 val authCredential = GoogleAuthProvider.getCredential(tokenCredential.idToken, null)
                 val authResult = auth.signInWithCredential(authCredential).await()
                 return authResult.user != null
@@ -77,13 +75,13 @@ class GoogleSignInViewModel(
 
 
 
-    suspend fun signIn(context: Context): Boolean { // Añade context como parámetro
+    suspend fun signIn(context: Context): Boolean {
         if (isSignedIn()) return true
         return try {
             Log.d("SignIn", "Entrando al bloque SignIn()")
-            val result = buildCredentialsRequest(context) // Pasa el contexto
+            val result = buildCredentialsRequest(context)
             Log.d("SignIn", "Antes de llamar a HandleSignIn")
-            handleSignIn(result, context) // Pasa el contexto
+            handleSignIn(result, context)
         } catch (e: Exception) {
             e.printStackTrace()
             if (e is CancellationException) throw e

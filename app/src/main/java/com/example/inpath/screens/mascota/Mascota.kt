@@ -1,4 +1,4 @@
-package com.example.inpath.screens
+package com.example.inpath.screens.mascota
 
 import android.Manifest
 import android.content.Intent
@@ -38,23 +38,24 @@ import kotlinx.coroutines.launch
 @Composable
 fun Mascota(
     navController: NavController,
-    viewModel: MascotaViewModel = viewModel(),
     snackbarHostState: SnackbarHostState,
-    redDisponible: Boolean
+    redDisponible: Boolean // Puedes mantenerlo si lo usas en otras partes
 ){
-    var mostrarMenu by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val viewModel: MascotaViewModel = viewModel(
+        factory = MascotaViewModel.MascotaViewModelFactory(context.applicationContext)
+    )
+    var mostrarMenu by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val posicionMascota by viewModel.posicionMascota.collectAsState()
 
-    // Lista de permisos necesarios
+    // Lista de permisos necesarios (asegúrate de incluir BACKGROUND_LOCATION si es para apps que se ejecutan en background)
     val permisosUbicacion = arrayOf(
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.ACCESS_COARSE_LOCATION,
-        Manifest.permission.ACCESS_BACKGROUND_LOCATION
+        Manifest.permission.ACCESS_BACKGROUND_LOCATION // Para Android 10+ si quieres rastreo en background
     )
 
-    // Launcher para solicitar permisos
     val permisosLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
     ) { permisos ->
@@ -74,16 +75,27 @@ fun Mascota(
                     context.startActivity(intent)
                 }
             }
+        } else {
+            // Si los permisos se acaban de conceder, y hay una mascota seleccionada, iniciar el rastreo
+            viewModel.mascotaSeleccionada?.let {
+                viewModel.startLocationUpdatesParaMascota()
+            }
         }
     }
 
-    //REALTIME DATABASE - CARGAR MASCOTAS
+    // REALTIME DATABASE - CARGAR MASCOTAS y OBSERVAR POSICIÓN
     LaunchedEffect(Unit) {
         viewModel.cargarMascotasDesdeFirebase()
     }
 
-    // Verifica permisos después de regresar de configuración
-    fun verificarPermisos(): Boolean {
+    LaunchedEffect(viewModel.mascotaSeleccionada) {
+        viewModel.mascotaSeleccionada?.let {
+            viewModel.observarPosicionDesdeFirebase()
+        }
+    }
+
+    // Verifica permisos al inicio y después de regresar de configuración
+    fun verificarPermisosActuales(): Boolean {
         return permisosUbicacion.all {
             ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
         }.also { permisosOk ->
@@ -106,18 +118,13 @@ fun Mascota(
             ) {
                 Text(viewModel.mascotaSeleccionada!!)
                 Button(onClick = {
-                    viewModel.eliminarMascota()
+                    viewModel.eliminarMascota() // Elimina la mascota y detiene el rastreo asociado
                     scope.launch {
-                        val resultadoSnackbar = snackbarHostState.showSnackbar(
-                            message = context.getString(R.string.permisos_retirar_mensaje),
-                            actionLabel = context.getString(R.string.configuracion)
+                        // El Snackbar para informar sobre la deselección/eliminación
+                        snackbarHostState.showSnackbar(
+                            message = context.getString(R.string.mascota_eliminada_deseleccionada), // Nuevo string o adaptar
+                            actionLabel = context.getString(R.string.aceptar)
                         )
-                        if (resultadoSnackbar == SnackbarResult.ActionPerformed) {
-                            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                                data = Uri.fromParts("package", context.packageName, null)
-                            }
-                            context.startActivity(intent)
-                        }
                     }
                 }) {
                     Text(stringResource(R.string.eliminar))
@@ -137,7 +144,7 @@ fun Mascota(
             )
         } else {
             Button(onClick = {
-                if (verificarPermisos()) {
+                if (verificarPermisosActuales()) {
                     mostrarMenu = true
                 } else {
                     permisosLauncher.launch(permisosUbicacion)
@@ -158,18 +165,20 @@ fun Mascota(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    mascotas.forEach { nombre ->
-                        Button(onClick = {
-                            if (viewModel.permisosConcedidos) {
-                                viewModel.seleccionarMascota(nombre)
-                                mostrarMenu = false
-                                viewModel.iniciarActualizacionPosicion()
-                                viewModel.observarPosicionDesdeFirebase()
-                            } else {
-                                permisosLauncher.launch(permisosUbicacion)
+                    if (mascotas.isEmpty()) {
+                        Text(stringResource(R.string.no_mascotas_disponibles))
+                    } else {
+                        mascotas.forEach { nombre ->
+                            Button(onClick = {
+                                if (viewModel.permisosConcedidos) {
+                                    viewModel.seleccionarMascota(nombre)
+                                    mostrarMenu = false
+                                } else {
+                                    permisosLauncher.launch(permisosUbicacion)
+                                }
+                            }) {
+                                Text(nombre)
                             }
-                        }) {
-                            Text(nombre)
                         }
                     }
                 }
@@ -182,5 +191,4 @@ fun Mascota(
             properties = DialogProperties(usePlatformDefaultWidth = false)
         )
     }
-
 }

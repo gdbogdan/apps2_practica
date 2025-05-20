@@ -1,4 +1,4 @@
-package com.example.inpath.screens
+package com.example.inpath.screens.inicio_sesion
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -47,8 +47,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun Seleccion_Acceso_Cuenta(
     navHostController: NavHostController,
-    auth: FirebaseAuth, // Recibimos FirebaseAuth, que es correcto
-    snackbarHostState: SnackbarHostState // Recibimos SnackbarHostState
+    auth: FirebaseAuth,
+    snackbarHostState: SnackbarHostState
 ) {
     val context = LocalContext.current as Activity
     // Aseguramos que obtenemos el Application Context
@@ -127,7 +127,6 @@ fun Seleccion_Acceso_Cuenta(
     }
 }
 
-// --- Composable Boton_Personalizado (modificado para ser funcional) ---
 @Composable
 fun Boton_Personalizado(modifier: Modifier = Modifier, onClick: () -> Unit) {
     val buttonShape = RoundedCornerShape(percent = 50)

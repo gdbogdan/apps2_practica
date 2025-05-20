@@ -86,6 +86,7 @@ dependencies {
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.androidx.credentials)
     implementation(libs.googleid)
+    implementation(libs.play.services.location)
 
     implementation(libs.androidx.appcompat)
     implementation(libs.google.firebase.auth.ktx)
