@@ -90,6 +90,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.google.firebase.auth.ktx)
     implementation(libs.firebase.auth.ktx)
+    implementation(libs.firebase.realtime)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

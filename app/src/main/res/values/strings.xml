@@ -64,5 +64,6 @@
     <string name="intentando_iniciar_sesion_google">Intentando iniciar sesión con Google...</string>
     <string name="inicio_sesion_correcto_google">Inicio de sesión Google exitoso. Navegando a \'Seleccion_tipo_usuario\'</string>
     <string name="error_inicio_sesion_google">Error al iniciar sesión con Google.</string>
+    <string name="otro_metodo">Iniciar sesión con otro método</string>
 
 </resources>

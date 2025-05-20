@@ -1,6 +1,5 @@
 package com.example.inpath.screens
 
-import PosicionMascotaViewModel
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -41,14 +40,12 @@ fun Mascota(
     navController: NavController,
     viewModel: MascotaViewModel = viewModel(),
     snackbarHostState: SnackbarHostState,
-    redDisponible: Boolean,
-    posicionViewModel: PosicionMascotaViewModel = viewModel()
+    redDisponible: Boolean
 ){
     var mostrarMenu by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-
-    val posicionMascota by posicionViewModel.posicion.collectAsState()
+    val posicionMascota by viewModel.posicionMascota.collectAsState()
 
     // Lista de permisos necesarios
     val permisosUbicacion = arrayOf(
@@ -78,6 +75,11 @@ fun Mascota(
                 }
             }
         }
+    }
+
+    //REALTIME DATABASE - CARGAR MASCOTAS
+    LaunchedEffect(Unit) {
+        viewModel.cargarMascotasDesdeFirebase()
     }
 
     // Verifica permisos después de regresar de configuración
@@ -147,6 +149,7 @@ fun Mascota(
     }
 
     if (mostrarMenu) {
+        val mascotas by viewModel.mascotasDisponibles.collectAsState()
         AlertDialog(
             onDismissRequest = { mostrarMenu = false },
             title = { Text(stringResource(R.string.seleccionar_mascota)) },
@@ -155,11 +158,13 @@ fun Mascota(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    viewModel.obtenerMascotasDisponibles().forEach { nombre ->
+                    mascotas.forEach { nombre ->
                         Button(onClick = {
                             if (viewModel.permisosConcedidos) {
-                                viewModel.agregarMascota(nombre)
+                                viewModel.seleccionarMascota(nombre)
                                 mostrarMenu = false
+                                viewModel.iniciarActualizacionPosicion()
+                                viewModel.observarPosicionDesdeFirebase()
                             } else {
                                 permisosLauncher.launch(permisosUbicacion)
                             }
@@ -177,4 +182,5 @@ fun Mascota(
             properties = DialogProperties(usePlatformDefaultWidth = false)
         )
     }
+
 }

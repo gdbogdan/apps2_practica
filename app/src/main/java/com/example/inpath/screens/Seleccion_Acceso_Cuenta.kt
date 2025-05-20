@@ -116,7 +116,7 @@ fun Seleccion_Acceso_Cuenta(
 
         val textColor = if (isSystemInDarkTheme()) Color.White else Color.Black
         Text(
-            text = stringResource(R.string.crear_cuenta),
+            text = stringResource(R.string.crear_cuenta2),
             color = textColor,
             modifier = Modifier
                 .padding(top = 12.dp)

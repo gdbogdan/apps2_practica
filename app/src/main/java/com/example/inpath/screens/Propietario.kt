@@ -2,13 +2,7 @@
 // TIENE QUE DAR LA OPCION DE PERMITIR ESCOGER COARSE O FINE LOCATION AL SELECCIONAR
 package com.example.inpath.screens
 
-import AreaSegura
-import MascotaInfo
-import Posicion
-import PosicionMascotaViewModel
-import PropietarioViewModel
 import android.annotation.SuppressLint
-import android.location.Location
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,13 +22,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -44,7 +38,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -59,18 +52,7 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-
-interface LocationCallback {
-    fun onLocationResult(locationResult: LocationResult)
-}
-
-data class LocationResult(val locations: List<Location>) {
-    companion object {
-        fun create(locations: List<Location>) = LocationResult(locations)
-    }
-}
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -79,9 +61,11 @@ fun Propietario(
     navController: NavController,
     viewModel: PropietarioViewModel = viewModel(),
     snackbarHostState: SnackbarHostState,
-    redDisponible: Boolean,
-    posicionViewModel: PosicionMascotaViewModel = viewModel()
+    redDisponible: Boolean
 ) {
+    //REALTIME DATABASE
+    val mascotas by viewModel.mascotasFirebase.collectAsState()
+
     var mostrarDialogoAgregarMascota by remember { mutableStateOf(false) }
     var nombreMascota by remember { mutableStateOf("") }
     var sexoMascota by remember { mutableStateOf("") }
@@ -89,44 +73,20 @@ fun Propietario(
     var expandedSexo by remember { mutableStateOf(false) }
     var expandedTipo by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-    val context = LocalContext.current
     val scrollState = rememberScrollState()
-    var mascotaAEliminar by remember { mutableStateOf<MascotaInfo?>(null) }
+    var mascotaAEliminar by remember { mutableStateOf<MascotaFirebase?>(null) }
     var modoEliminar by remember { mutableStateOf(false) }
-    var localizacionActivada by remember { mutableStateOf(false) }
-    var areaSeguraActivada by remember { mutableStateOf(false) }
+    val estadoRastreo = remember { mutableStateMapOf<String, String>() }
+    var ubicacionActual by remember { mutableStateOf(Posicion(41.60831345075668, 0.6234935707600733)) } //Dirección EPS
 
-    val posicionMascota by posicionViewModel.posicion.collectAsState()
-    var ubicacionActual by remember { mutableStateOf(posicionMascota) }
     var mostrarMapa by remember { mutableStateOf(false) }
     var mostrarDialogoAreaSegura by remember { mutableStateOf(false) }
     var areaSeguraSeleccionada by remember { mutableStateOf<AreaSegura?>(null) }
+    var mascotaParaAreaSegura by remember { mutableStateOf<MascotaFirebase?>(null) }
 
-    var mostrandoCrearAreaDialog by remember { mutableStateOf(false) }
-    var mostrandoEliminarAreaDialog by remember { mutableStateOf(false) }
-
-    val ubicacionCallback = remember {
-        object : LocationCallback {
-            override fun onLocationResult(locationResult: LocationResult) {
-                locationResult.locations.lastOrNull()?.let { location ->
-                    ubicacionActual = Posicion(location.latitude, location.longitude)
-                }
-            }
-        }
-    }
-
-    fun requestLocationUpdates() {
-        ubicacionCallback.onLocationResult(LocationResult.create(listOf(Location("").apply {
-            latitude = posicionMascota.latitud
-            longitude = posicionMascota.longitud
-        })))
-    }
-
+    //REALTIME DATABASE - OBSERVA MASCOTAS EN FIREBASE
     LaunchedEffect(Unit) {
-        while (true) {
-            requestLocationUpdates()
-            delay(10000)
-        }
+        viewModel.observarMascotasDesdeFirebase()
     }
 
     Column(
@@ -151,7 +111,7 @@ fun Propietario(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        viewModel.listaMascotas.value.forEachIndexed { index, mascota ->
+        mascotas.forEachIndexed { index, mascota ->
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -167,30 +127,58 @@ fun Propietario(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     if (!modoEliminar) {
+                        val rastreoActual = estadoRastreo[mascota.nombre] ?: ""
+
                         Button(
                             onClick = {
-                                localizacionActivada = !localizacionActivada
-                                areaSeguraActivada = false
-                                viewModel.actualizarLocalizacion(index, localizacionActivada)
+                                val nuevoTipo = if (rastreoActual == "Localizacion") "" else "Localizacion"
+                                estadoRastreo[mascota.nombre] = nuevoTipo
+
+                                if (nuevoTipo == "Localizacion") {
+                                    viewModel.actualizarTipoRastreo(mascota.nombre, "Localizacion")
+                                    viewModel.observarPosicionMascota(mascota.nombre) { nuevaPos ->
+                                        ubicacionActual = nuevaPos
+                                    }
+                                } else {
+                                    viewModel.actualizarTipoRastreo(mascota.nombre, "")
+                                }
                             },
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = if (localizacionActivada) Color.Green else Color.LightGray
+                                containerColor = if (rastreoActual == "Localizacion") Color.Green else Color.LightGray
                             )
                         ) {
                             Text(stringResource(R.string.localizacion))
                         }
+
                         Spacer(modifier = Modifier.width(8.dp))
+
                         Button(
                             onClick = {
-                                mostrarDialogoAreaSegura = true
+                                val nuevoTipo = if (rastreoActual == "AreaSegura") "" else "AreaSegura"
+                                estadoRastreo[mascota.nombre] = nuevoTipo
+
+                                if (nuevoTipo == "AreaSegura") {
+                                    mascotaParaAreaSegura = mascota
+                                    mostrarDialogoAreaSegura = true
+                                    viewModel.actualizarTipoRastreo(mascota.nombre, "AreaSegura")
+                                } else {
+                                    viewModel.actualizarTipoRastreo(mascota.nombre, "")
+                                }
                             },
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = if (areaSeguraSeleccionada != null) Color.Green else Color.LightGray
+                                containerColor = if (rastreoActual == "AreaSegura") Color.Green else Color.LightGray
                             )
                         ) {
-                            Text(if (areaSeguraSeleccionada != null) areaSeguraSeleccionada?.nombre ?: stringResource(R.string.area_segura) else stringResource(R.string.area_segura))
+                            Text(
+                                if (areaSeguraSeleccionada != null && rastreoActual == "AreaSegura")
+                                    areaSeguraSeleccionada?.nombre ?: stringResource(R.string.area_segura)
+                                else
+                                    stringResource(R.string.area_segura)
+                            )
                         }
                     }
+
+
                     if (modoEliminar) {
                         Spacer(modifier = Modifier.width(8.dp))
                         Button(
@@ -240,20 +228,18 @@ fun Propietario(
             onDismiss = { mostrarDialogoAreaSegura = false },
             onAreaSeleccionada = { area ->
                 areaSeguraSeleccionada = area
-                areaSeguraActivada = true
-                localizacionActivada = false
-                //viewModel.actualizarLocalizacion(index, !areaSeguraActivada)
+
+                mascotaParaAreaSegura?.let { mascota ->
+                    estadoRastreo[mascota.nombre] = "AreaSegura"
+                    viewModel.actualizarTipoRastreo(mascota.nombre, "AreaSegura")
+                }
+
                 scope.launch {
-                    val resultado = snackbarHostState.showSnackbar(
-                        message = "Área seleccionada: ${area.nombre}"
-                    )
-                    if (resultado == SnackbarResult.ActionPerformed) {
-                        // Se cierra el snackbar
-                    }
+                    snackbarHostState.showSnackbar("Área seleccionada: ${area.nombre}")
                 }
             },
-            snackbarHostState = snackbarHostState, // Pasa snackbarHostState
-            scope = scope // Pasa scope
+            snackbarHostState = snackbarHostState,
+            scope = scope
         )
     }
 
@@ -342,8 +328,32 @@ fun Propietario(
             confirmButton = {
                 Button(onClick = {
                     if (nombreMascota.isNotBlank() && sexoMascota.isNotBlank() && tipoMascota.isNotBlank()) {
-                        viewModel.agregarMascota(MascotaInfo(nombreMascota, sexoMascota, tipoMascota))
-                        mostrarDialogoAgregarMascota = false
+                        val mascota = MascotaFirebase(
+                            nombre = nombreMascota,
+                            sexo = sexoMascota,
+                            tipo = tipoMascota,
+                            tipoRastreo = "",
+                            latitud = ubicacionActual.latitud,
+                            longitud = ubicacionActual.longitud,
+                            seleccionada = false
+                        )
+
+                        viewModel.subirMascotaAFirebase(
+                            mascota,
+                            onSuccess = {
+                                mostrarDialogoAgregarMascota = false
+                                scope.launch {
+                                    snackbarHostState.showSnackbar("Mascota guardada correctamente.")
+                                }
+                            },
+                            onFailure = {
+                                scope.launch {
+                                    snackbarHostState.showSnackbar("Error al guardar la mascota: ${it.message}")
+                                }
+                            }
+                        )
+
+                        // Limpiar campos
                         nombreMascota = ""
                         sexoMascota = ""
                         tipoMascota = ""
@@ -373,8 +383,20 @@ fun Propietario(
             text = { Text(stringResource(R.string.aviso_no_deshacer)) },
             confirmButton = {
                 Button(onClick = {
-                    viewModel.eliminarMascota(mascotaAEliminar!!)
-                    mascotaAEliminar = null
+                    viewModel.eliminarMascotaDeFirebase(
+                        nombreMascota = mascotaAEliminar!!.nombre,
+                        onSuccess = {
+                            mascotaAEliminar = null
+                            scope.launch {
+                                snackbarHostState.showSnackbar("Mascota eliminada correctamente.")
+                            }
+                        },
+                        onFailure = {
+                            scope.launch {
+                                snackbarHostState.showSnackbar("Error al eliminar la mascota: ${it.message}")
+                            }
+                        }
+                    )
                 }) {
                     Text(stringResource(R.string.eliminar))
                 }
